@@ -7,6 +7,8 @@ import os
 
 import subprocess
 
+from flask import render_template
+
 # # Decorators enhance functions with additional behaviours 
 # # Writen above a function and starts with @ sign 
 # # Here it provides a mapping between a url and a function 
@@ -67,4 +69,9 @@ def serve_index():
     # Use send_from_directory to serve the index.html file
     return send_from_directory(html_dir, 'index.html')
 
+
+@app.route('/user')
+def user():
+    user = {'username':'Sam'}
+    return render_template("index.html", title="User", user=user) 
 

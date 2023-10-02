@@ -3,7 +3,7 @@ Basics of Flask micro web framework in Python.
 
 Flask Web Dev Framework
 
-# Miguel Lectures 
+# Miguel Lectures
 
 ==*30/09/2023 00:31*==
 
@@ -76,13 +76,13 @@ def index():
     return "Hello Microblog!"
 ```
 
-- Make top level script that represents the application `microblog/microblog.py` 
+- Make top level script that represents the application `microblog/microblog.py`
 
 ```python
 from app import app
 ```
 
-- To tell Flask where the application is located, define an environment variable `export FLASK_APP` to reset to `microblog.py`, which is the module that defines the application 
+- To tell Flask where the application is located, define an environment variable `export FLASK_APP` to reset to `microblog.py`, which is the module that defines the application
 
 ```bash
 export FLASK_APP=microblog.py
@@ -90,7 +90,7 @@ set FLASK_APP=microblog.py # windows
 flask run # start the application
 ```
 
-- Go to the http url shown in console 
+- Go to the http url shown in console
 
 ```bash
 (venv) (base) ... /microblog$ flask run
@@ -102,3 +102,86 @@ Press CTRL+C to quit
 127.0.0.1 - - [30/Sep/2023 15:47:16] "GET /favicon.ico HTTP/1.1" 404 -
 ```
 
+- To forcefully kill the Flask application, you should use `CTRL + C` and not `CTRL + Z`.
+- If you confuse and use `CTRL + Z` it will not be possible to use `CTRL + C` and the Flask application will not stop and the next time you do `flask run`, you will get this error:
+
+```bash
+* Debug mode: off
+Address already in use
+Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
+```
+
+- To force stop, identify the `PID` of the Flask application running in the background: 
+
+```bash
+ps aux | grep python
+```
+
+- Let us say you identify this output :
+
+```bash
+user       279519  0.0  0.1 108460 28072 pts/4    T    17:12   0:00 /home/user/Documents/flask-micro-web-framework/venv/bin/python3 /home/user/Documents/flask-micro-web-framework/venv/bin/flask run
+```
+
+- The `PID` is `279519` and you can now force kill it:
+
+```bash
+kill -9 279519
+```
+
+*==02/10/2023 17:32==*
+
+## 4\. Templates 
+
+With the following code, if you navigate to /user url, you will find the following message: "Hello, Sam!"
+
+```python
+@app.route('/user')
+def user():
+    user = {'username':'Sam'}
+    return f"Hello, {user['username']}!"
+```
+
+Or 
+
+```python
+@app.route('/user')
+def user():
+    user = {'username':'Sam'}
+    return """
+<html>
+    <head>
+    <title>Microblog</title>
+    </head>
+    <body>
+    <h1> Hello, """ + user['username'] + """ !</h1>
+    </body>
+</html>
+"""
+```
+
+- But if your website continues to grow and, say, you have several pages and each page need to have, say, the same navigation bar, you have to keep copying that code across all pages and that is going to be very difficult to maintain. 
+- It is important to separate the application logic from the presentation. Avoid mixing the code with HTML.
+- An easier way to do this is to create a `templates` folder in `microblog/app/templates` and Flask will automatically recognise this folder.
+- Then create, say, `index.html` inside `templates` folder:
+
+```html
+<html>
+    <head>
+    <title>{{title}} - Microblog</title>
+    </head>
+    <body>
+    <h1> Hello, {{user.username}} !</h1>
+    <h2>Here is h2 line.</h2>
+    </body>
+</html>
+```
+
+- You can then pass those variables in `render_template` in `routes.py`:
+
+```python
+@app.route('/user')
+def user():
+    user = {'username':'Sam'}
+    return render_template("index.html", title="User", user=user)
+```
