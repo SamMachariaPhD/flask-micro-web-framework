@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Ignore these too
+*.adoc 
+*.html
+
 # Distribution / packaging
 .Python
 build/
