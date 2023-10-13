@@ -111,7 +111,7 @@ Address already in use
 Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
 ```
 
-- To force stop, identify the `PID` of the Flask application running in the background: 
+- To force stop, identify the `PID` of the Flask application running in the background:
 
 ```bash
 ps aux | grep python
@@ -131,7 +131,7 @@ kill -9 279519
 
 *==02/10/2023 17:32==*
 
-## 4\. Templates 
+## 4\. Templates
 
 With the following code, if you navigate to /user url, you will find the following message: "Hello, Sam!"
 
@@ -142,7 +142,7 @@ def user():
     return f"Hello, {user['username']}!"
 ```
 
-Or 
+Or
 
 ```python
 @app.route('/user')
@@ -160,7 +160,7 @@ def user():
 """
 ```
 
-- But if your website continues to grow and, say, you have several pages and each page need to have, say, the same navigation bar, you have to keep copying that code across all pages and that is going to be very difficult to maintain. 
+- But if your website continues to grow and, say, you have several pages and each page need to have, say, the same navigation bar, you have to keep copying that code across all pages and that is going to be very difficult to maintain.
 - It is important to separate the application logic from the presentation. Avoid mixing the code with HTML.
 - An easier way to do this is to create a `templates` folder in `microblog/app/templates` and Flask will automatically recognise this folder.
 - Then create, say, `index.html` inside `templates` folder:
@@ -184,4 +184,95 @@ def user():
 def user():
     user = {'username':'Sam'}
     return render_template("index.html", title="User", user=user)
+```
+
+==*12/10/2023 17:35*==
+
+## 5\. Conditional Statements
+
+- An example condition: what if the title is not provided?
+
+`microblog/app/routes.py`
+
+```python
+@app.route('/user')
+def user():
+    user = {'username':'Sam'}
+    return render_template("index.html", title="", user=user) # title not provided
+```
+
+`microblog/app/templates/index.html`
+
+```html
+<html>
+    <head>
+        {% if title %}
+        <title>{{title}} - Microblog</title>
+        {% else %}
+        <title>Welcome to Microblog</title> <!-- Print this if the title is not provided.  -->
+        {% endif %}
+    </head>
+    <body>
+    <h1> Hello, {{user.username}} !</h1>
+    <h2>Here is h2 line.</h2>
+    </body>
+</html>
+```
+
+- Loops 
+
+```python
+posts = [
+        {
+            'author':{'username':'John'},
+            'body':'The Future of AI'
+        },
+        {
+            'author':{'username':'Daniel'},
+            'body':'Solid Mechanics'
+        },
+    ]
+```
+
+```html
+{% for post in posts %}
+    <div><p> <i>{{ post.author.username }}</i> says: <b>{{ post.body }}</b></p></div>
+    {% endfor %}
+```
+
+## 7\. Template Inheritance
+
+We can use *template inheritance* method to make a `base.html` skeleton which contains the **navigation bar** and all other common features/structure of our page that can be reused in other pages. Every new page will be *extending* the *base.html* and the new part will be inserted in the `block content` space.
+
+- base.html
+
+```html
+<html>
+    <head>
+        {% if title %}
+        <title>{{title}} - Microblog</title>
+        {% else %}
+        <title>Welcome to Microblog</title> <!-- Print this if the title is not provided.  -->
+        {% endif %}
+    </head>
+    <body>
+        <div>Microblog: <a href="/index">Home</a></div>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
+```
+
+- index.html
+
+```html
+{% extends "base.html" %}
+
+{% block content %}
+    <h1> Hello, {{user.username}} !</h1>
+    <h2>Here is h2 line.</h2>
+    {% for post in posts %}
+    <div><p> <i>{{ post.author.username }}</i> says: <b>{{ post.body }}</b></p></div>
+    {% endfor %}
+{% endblock %}
 ```

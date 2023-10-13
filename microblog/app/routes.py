@@ -21,11 +21,11 @@ from flask import render_template
 #     return "Hello Microblog!"
 
 
-def convert_asciidoc_to_html(asciidoc_file_path):
+def convert_asciidoc_to_html(asciidoc_file_path, outpath):
     if os.path.exists(asciidoc_file_path):
         
         # Use the subprocess module to run the AsciiDoctor command
-        cmd = ['asciidoctor', '-o', output_html_path, asciidoc_file_path]
+        cmd = ['asciidoctor', '-o', outpath, asciidoc_file_path]
         try:
             subprocess.run(cmd, check=True)
             return True
@@ -48,7 +48,7 @@ file_base_name = os.path.splitext(os.path.basename(asciidoc_file_path))[0]
 output_html_path = f"static/html/{file_base_name}.html"
 
 # Convert the AsciiDoc content to HTML and save it with the same name as the input file
-conversion_successful = convert_asciidoc_to_html(asciidoc_file_path)
+conversion_successful = convert_asciidoc_to_html(asciidoc_file_path, output_html_path)
 
 if conversion_successful:
     print(f"Conversion successful. HTML saved as '{output_html_path}'")
@@ -73,5 +73,15 @@ def serve_index():
 @app.route('/user')
 def user():
     user = {'username':'Sam'}
-    return render_template("index.html", title="User", user=user) 
+    posts = [
+        {
+            'author':{'username':'John'},
+            'body':'The Future of AI'
+        },
+        {
+            'author':{'username':'Daniel'},
+            'body':'Solid Mechanics'
+        },
+    ]
+    return render_template("index.html", title="User", user=user, posts=posts) 
 
